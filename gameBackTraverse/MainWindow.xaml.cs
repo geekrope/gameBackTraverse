@@ -6,109 +6,28 @@ using System.Windows.Controls;
 
 namespace gameBackTraverse
 {
-    public record struct IntegerPoint(int X, int Y);
-    public record struct IntegerSize(int Width, int Height);
-
-    public class Table
-    {
-        private Dictionary<IntegerPoint, bool> _cells;
-        private IntegerSize _tableSize;
-        private Func<IntegerPoint, IntegerPoint, bool> _ableToMove;
-
-        public bool this[IntegerPoint point]
-        {
-            get
-            {
-                return _cells[point];
-            }
-        }
-        public IntegerSize Size
-        {
-            get => _tableSize;
-        }
-
-        private bool EvaluateCellValue(IntegerPoint point)
-        {
-            var result = true;
-
-            ForEach((int x, int y) =>
-            {
-                var currentCellPosition = new IntegerPoint(x, y);
-
-                if (currentCellPosition != point)
-                {
-                    var ableToMove = _ableToMove(point, currentCellPosition);
-
-                    if (ableToMove)
-                    {
-                        var value = CellValue(currentCellPosition);
-
-                        if (value)
-                        {
-                            result = false;
-                        }
-                    }
-                }
-            });
-
-            _cells.Add(point, result);
-
-            return result;
-        }
-        private bool CellValue(IntegerPoint point)
-        {
-            if (_cells.ContainsKey(point))
-            {
-                return _cells[point];
-            }
-            else
-            {
-                return EvaluateCellValue(point);
-            }
-        }
-        private void Evaluate()
-        {
-            ForEach((int x, int y) =>
-            {
-                var point = new IntegerPoint(x, y);
-
-                if (!_cells.ContainsKey(point))
-                {
-                    EvaluateCellValue(point);
-                }
-            });
-        }
-        private void ForEach(Action<int, int> action)
-        {
-            for (int x = 1; x <= _tableSize.Width; x++)
-            {
-                for (int y = 1; y <= _tableSize.Height; y++)
-                {
-                    action(x, y);
-                }
-            }
-        }
-
-        public void ForEach(Action<IntegerPoint, bool> action)
-        {
-            foreach (var cell in _cells)
-            {
-                action(cell.Key, cell.Value);
-            }
-        }
-
-        public Table(Dictionary<IntegerPoint, bool> initial, IntegerSize tableSize, Func<IntegerPoint, IntegerPoint, bool> ableToMove)
-        {
-            _cells = initial;
-            _tableSize = tableSize;
-            _ableToMove = ableToMove;
-
-            Evaluate();
-        }
-    }
     public partial class MainWindow : Window
     {
+        private void InitializeGrid(Table table)
+        {
+            for (int column = table.Start.X; column <= table.Size.Width; column++)
+            {
+                var columnDefinition = new ColumnDefinition();
+                columnDefinition.Width = new GridLength(1, GridUnitType.Star);
+                grid.ColumnDefinitions.Add(columnDefinition);
+            }
+            for (int row = table.Start.Y; row <= table.Size.Height; row++)
+            {
+                var rowDefinition = new RowDefinition();
+                rowDefinition.Height = new GridLength(1, GridUnitType.Star);
+                grid.RowDefinitions.Add(rowDefinition);
+            }
+        }
         private void Draw(Table table)
+        {
+            Draw(table, new IntegerPoint[0]);
+        }
+        private void Draw(Table table, IntegerPoint[] deadPoints)
         {
             table.ForEach((IntegerPoint point, bool value) =>
             {
@@ -117,11 +36,19 @@ namespace gameBackTraverse
                 label.HorizontalContentAlignment = HorizontalAlignment.Center;
                 label.VerticalContentAlignment = VerticalAlignment.Center;
 
+                foreach (var deadPoint in deadPoints)
+                {
+                    if (point == deadPoint)
+                    {
+                        label.Content = "X";
+                    }
+                }
+
                 var borderWidth = 1;
 
                 Thickness thickness = new Thickness(0, 0, borderWidth, borderWidth);
 
-                if (point.X == 1)
+                if (point.X == table.Start.X)
                 {
                     thickness.Left = borderWidth;
                 }
@@ -134,7 +61,7 @@ namespace gameBackTraverse
                 label.SetValue(BorderBrushProperty, new SolidColorBrush(Colors.Black));
                 label.SetValue(FontSizeProperty, 24.0);
 
-                label.SetValue(Grid.ColumnProperty, point.X - 1);
+                label.SetValue(Grid.ColumnProperty, point.X - table.Start.X);
                 label.SetValue(Grid.RowProperty, table.Size.Height - point.Y);
 
                 grid.Children.Add(label);
@@ -145,12 +72,9 @@ namespace gameBackTraverse
         {
             InitializeComponent();
 
-            var table = new Table(new Dictionary<IntegerPoint, bool> { { new IntegerPoint(8, 8), true } }, new IntegerSize(8, 8), (IntegerPoint start, IntegerPoint end) =>
-            {
-                return (start.X == end.X && (start.Y < end.Y)) || (start.Y == end.Y && (start.X < end.X));
-            });
-
-            Draw(table);
+            var task = Tasks.Task2B();
+            InitializeGrid(task.table);
+            Draw(task.table, task.deadPoints);
         }
     }
 }
