@@ -1,50 +1,89 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
 
 namespace gameBackTraverse
 {
+
+
     public partial class MainWindow : Window
     {
-        private void InitializeGrid(Table table)
+        private void InitializeGrid(Table table, Grid grid)
         {
-            for (int column = table.Start.X; column <= table.Size.Width; column++)
+            for (int column = table.Start.X; column <= table.Size.Width + 1; column++)
             {
                 var columnDefinition = new ColumnDefinition();
                 columnDefinition.Width = new GridLength(1, GridUnitType.Star);
                 grid.ColumnDefinitions.Add(columnDefinition);
             }
-            for (int row = table.Start.Y; row <= table.Size.Height; row++)
+            for (int row = table.Start.Y; row <= table.Size.Height + 1; row++)
             {
                 var rowDefinition = new RowDefinition();
                 rowDefinition.Height = new GridLength(1, GridUnitType.Star);
                 grid.RowDefinitions.Add(rowDefinition);
             }
         }
-        private void Draw(Table table)
+        private Label CreateLabel(object content, double fontSize, int column, int row)
         {
-            Draw(table, new IntegerPoint[0]);
+            var label = new Label();
+
+            label.Content = content;
+
+            label.HorizontalContentAlignment = HorizontalAlignment.Center;
+            label.VerticalContentAlignment = VerticalAlignment.Center;
+
+            label.SetValue(FontSizeProperty, fontSize);
+
+            label.SetValue(Grid.ColumnProperty, column);
+            label.SetValue(Grid.RowProperty, row);
+            label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+
+            var squareSide = Math.Max(label.DesiredSize.Width, label.DesiredSize.Height);
+            label.Width = squareSide;
+            label.Height = squareSide;
+
+            return label;
         }
-        private void Draw(Table table, IntegerPoint[] deadPoints)
+        private void CreateColumnDefinitions(NamesIterator source, Table table, Grid grid, double fontSize)
+        {
+            var definition = source.First();
+
+            for (int column = 0; column <= table.Size.Width - table.Start.X; column++)
+            {
+                var label = CreateLabel(definition, fontSize, column + 1, 0);
+
+                grid.Children.Add(label);
+
+                definition = source.Next();
+            }
+        }
+        private void CreateRowDefinitions(NamesIterator source, Table table, Grid grid, double fontSize)
+        {
+            var definition = source.First();
+
+            for (int row = 0; row <= table.Size.Height - table.Start.Y; row++)
+            {
+                var label = CreateLabel(definition, fontSize, 0, row + 1);
+
+                grid.Children.Add(label);
+
+                definition = source.Next();
+            }
+        }
+        private void CreateTable(Table table, IntegerPoint[] deadPoints, double fontSize, double borderWidth)
         {
             table.ForEach((IntegerPoint point, bool value) =>
             {
-                var label = new Label();
-                label.Content = value ? "+" : "-";
-                label.HorizontalContentAlignment = HorizontalAlignment.Center;
-                label.VerticalContentAlignment = VerticalAlignment.Center;
+                var content = value ? "+" : "-";
 
                 foreach (var deadPoint in deadPoints)
                 {
                     if (point == deadPoint)
                     {
-                        label.Content = "X";
+                        content = "x";
                     }
                 }
-
-                var borderWidth = 1;
 
                 Thickness thickness = new Thickness(0, 0, borderWidth, borderWidth);
 
@@ -57,15 +96,26 @@ namespace gameBackTraverse
                     thickness.Top = borderWidth;
                 }
 
+                var label = CreateLabel(content, fontSize, point.X - table.Start.X + 1, table.Size.Height - point.Y + 1);
+
                 label.SetValue(BorderThicknessProperty, thickness);
                 label.SetValue(BorderBrushProperty, new SolidColorBrush(Colors.Black));
-                label.SetValue(FontSizeProperty, 24.0);
-
-                label.SetValue(Grid.ColumnProperty, point.X - table.Start.X);
-                label.SetValue(Grid.RowProperty, table.Size.Height - point.Y);
 
                 grid.Children.Add(label);
             });
+        }
+        private void Draw(Table table, Grid grid, NamesIterator columnIterator, NamesIterator rowIterator)
+        {
+            Draw(table, new IntegerPoint[0], grid, columnIterator, rowIterator);
+        }
+        private void Draw(Table table, IntegerPoint[] deadPoints, Grid grid, NamesIterator columnIterator, NamesIterator rowIterator)
+        {
+            var borderWidth = 1;
+            var tableFontSize = 24;
+            var definitionsFontSize = 12;
+            CreateColumnDefinitions(columnIterator, table, grid, definitionsFontSize);
+            CreateRowDefinitions(rowIterator, table, grid, definitionsFontSize);
+            CreateTable(table, deadPoints, tableFontSize, borderWidth);
         }
 
         public MainWindow()
@@ -73,8 +123,8 @@ namespace gameBackTraverse
             InitializeComponent();
 
             var task = Tasks.Task2B();
-            InitializeGrid(task.table);
-            Draw(task.table, task.deadPoints);
+            InitializeGrid(task.table, grid);
+            Draw(task.table, task.deadPoints, grid, AlphabetIterator.Instance, NaturalNumberIterator.Instance);
         }
     }
 }
