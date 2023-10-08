@@ -10,7 +10,8 @@ namespace gameBackTraverse
     {
         private Dictionary<IntegerPoint, bool> _cells;
         private IntegerPoint _start;
-        private IntegerSize _tableSize;
+        private IntegerPoint _end;
+        private IntegerSize _size;
         private Func<IntegerPoint, IntegerPoint, bool> _ableToMove;
 
         public bool this[IntegerPoint point]
@@ -24,9 +25,13 @@ namespace gameBackTraverse
         {
             get => _start;
         }
+        public IntegerPoint End
+        {
+            get => _end;
+        }
         public IntegerSize Size
         {
-            get => _tableSize;
+            get => _size;
         }
 
         private bool EvaluateOutcomes(IntegerPoint point)
@@ -82,9 +87,9 @@ namespace gameBackTraverse
         }
         private void ForEach(Action<int, int> action)
         {
-            for (int x = _start.X; x < _tableSize.Width + _start.X; x++)
+            for (int x = _start.X; x <= _end.X; x++)
             {
-                for (int y = _start.Y; y < _tableSize.Height + _start.Y; y++)
+                for (int y = _start.Y; y <= _end.Y; y++)
                 {
                     action(x, y);
                 }
@@ -99,11 +104,12 @@ namespace gameBackTraverse
             }
         }
 
-        public Table(Dictionary<IntegerPoint, bool> initial, IntegerPoint start, IntegerSize tableSize, Func<IntegerPoint, IntegerPoint, bool> ableToMove)
+        public Table(Dictionary<IntegerPoint, bool> initial, IntegerPoint start, IntegerPoint end, Func<IntegerPoint, IntegerPoint, bool> ableToMove)
         {
             _cells = initial;
             _start = start;
-            _tableSize = tableSize;
+            _end = end;
+            _size = new IntegerSize(_end.X - _start.X + 1, _end.Y - _start.Y + 1);
             _ableToMove = ableToMove;
 
             Evaluate();

@@ -8,7 +8,7 @@ namespace gameBackTraverse
     {
         public static (Table table, IntegerPoint[] deadPoints) Task2A()
         {
-            return (new Table(new Dictionary<IntegerPoint, bool> { { new IntegerPoint(8, 8), true } }, new IntegerPoint(1, 1), new IntegerSize(8, 8), (IntegerPoint start, IntegerPoint end) =>
+            return (new Table(new Dictionary<IntegerPoint, bool> { { new IntegerPoint(8, 8), true } }, new IntegerPoint(1, 1), new IntegerPoint(8, 8), (IntegerPoint start, IntegerPoint end) =>
             {
                 var generalConidition = (start.X == end.X && (start.Y < end.Y) && (end.Y - start.Y <= 3)) || (start.Y == end.Y && (start.X < end.X));
                 var passThroughDeadPoint = (start.X == 8 && end.X == 8) && ((start.Y < 4 && end.Y > 4) || end.Y == 4);
@@ -18,7 +18,7 @@ namespace gameBackTraverse
         }
         public static (Table table, IntegerPoint[] deadPoints) Task2B()
         {
-            return (new Table(new Dictionary<IntegerPoint, bool> { { new IntegerPoint(8, 8), true } }, new IntegerPoint(1, 1), new IntegerSize(8, 8), (IntegerPoint start, IntegerPoint end) =>
+            return (new Table(new Dictionary<IntegerPoint, bool> { { new IntegerPoint(8, 8), true } }, new IntegerPoint(1, 1), new IntegerPoint(8, 8), (IntegerPoint start, IntegerPoint end) =>
             {
                 var generalConidition = (start.X == end.X && (start.Y < end.Y) && (end.Y - start.Y <= 3)) || (start.Y == end.Y && (start.X < end.X));
                 var passThroughDeadPoint = (start.X == 8 && end.X == 8) && ((start.Y < 4 && end.Y > 4) || end.Y == 4);
@@ -29,7 +29,7 @@ namespace gameBackTraverse
         }
         public static Table Task3()
         {
-            return new Table(new Dictionary<IntegerPoint, bool> { { new IntegerPoint(10, 10), true } }, new IntegerPoint(0, 0), new IntegerSize(11, 11), (IntegerPoint start, IntegerPoint end) =>
+            return new Table(new Dictionary<IntegerPoint, bool> { { new IntegerPoint(10, 10), true } }, new IntegerPoint(0, 0), new IntegerPoint(10, 10), (IntegerPoint start, IntegerPoint end) =>
             {
                 var condition = ((start.X == end.X) && (start.Y < end.Y)) || ((start.Y == end.Y) && (start.X < end.X)) && ((end.X - start.X + end.Y - start.Y == 4));
 
@@ -51,7 +51,7 @@ namespace gameBackTraverse
                 }
             }
 
-            return new Table(winningOutcomes, new IntegerPoint(2, 4), new IntegerSize(21, 19), (IntegerPoint start, IntegerPoint end) =>
+            return new Table(winningOutcomes, new IntegerPoint(2, 4), new IntegerPoint(22, 22), (IntegerPoint start, IntegerPoint end) =>
             {
                 var move1 = (end.X == start.X * 2 + 1) && (start.Y == end.Y);
                 var move2 = (end.X == start.X + 3) && (start.Y == end.Y);

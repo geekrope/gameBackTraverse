@@ -47,9 +47,9 @@ namespace gameBackTraverse
         {
             var definition = source.First();
 
-            for (int column = 0; column < table.Size.Width; column++)
+            for (int column = 1; column <= table.Size.Width; column++)
             {
-                var label = CreateLabel(definition, fontSize, column + 1, 0);
+                var label = CreateLabel(definition, fontSize, column, 0);
 
                 grid.Children.Add(label);
 
@@ -60,9 +60,9 @@ namespace gameBackTraverse
         {
             var definition = source.First();
 
-            for (int row = 0; row < table.Size.Height; row++)
+            for (int row = 1; row <= table.Size.Height; row++)
             {
-                var label = CreateLabel(definition, fontSize, 0, row + 1);
+                var label = CreateLabel(definition, fontSize, 0, row);
 
                 grid.Children.Add(label);
 
