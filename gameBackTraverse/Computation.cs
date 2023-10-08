@@ -29,7 +29,7 @@ namespace gameBackTraverse
             get => _tableSize;
         }
 
-        private bool EvaluateCellValue(IntegerPoint point)
+        private bool EvaluateOutcomes(IntegerPoint point)
         {
             var result = true;
 
@@ -43,7 +43,7 @@ namespace gameBackTraverse
 
                     if (ableToMove)
                     {
-                        var value = CellValue(currentCellPosition);
+                        var value = GetOutcome(currentCellPosition);
 
                         if (value)
                         {
@@ -57,7 +57,7 @@ namespace gameBackTraverse
 
             return result;
         }
-        private bool CellValue(IntegerPoint point)
+        private bool GetOutcome(IntegerPoint point)
         {
             if (_cells.ContainsKey(point))
             {
@@ -65,7 +65,7 @@ namespace gameBackTraverse
             }
             else
             {
-                return EvaluateCellValue(point);
+                return EvaluateOutcomes(point);
             }
         }
         private void Evaluate()
@@ -76,15 +76,15 @@ namespace gameBackTraverse
 
                 if (!_cells.ContainsKey(point))
                 {
-                    EvaluateCellValue(point);
+                    EvaluateOutcomes(point);
                 }
             });
         }
         private void ForEach(Action<int, int> action)
         {
-            for (int x = _start.X; x <= _tableSize.Width; x++)
+            for (int x = _start.X; x < _tableSize.Width + _start.X; x++)
             {
-                for (int y = _start.Y; y <= _tableSize.Height; y++)
+                for (int y = _start.Y; y < _tableSize.Height + _start.Y; y++)
                 {
                     action(x, y);
                 }

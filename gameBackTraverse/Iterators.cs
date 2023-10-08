@@ -4,8 +4,6 @@ namespace gameBackTraverse
 {
     public interface NamesIterator
     {
-        public static NamesIterator? Instance { get; }
-
         public string First();
         public string Next();
         public bool IsDone();
@@ -43,17 +41,12 @@ namespace gameBackTraverse
     }
     public class NaturalNumberIterator : NamesIterator
     {
-        private static NaturalNumberIterator? _instance;
         private int number = 0;
-
-        public static NamesIterator Instance
-        {
-            get => _instance == null ? _instance = new NaturalNumberIterator() : _instance;
-        }
+        private int start = 0;
 
         public string First()
         {
-            number = 1;
+            number = start;
             return number.ToString();
         }
         public string Next()
@@ -66,9 +59,9 @@ namespace gameBackTraverse
             return false;
         }
 
-        private NaturalNumberIterator()
+        public NaturalNumberIterator(int start)
         {
-
+            this.start = start;
         }
     }
 }

@@ -5,19 +5,17 @@ using System.Windows.Controls;
 
 namespace gameBackTraverse
 {
-
-
     public partial class MainWindow : Window
     {
         private void InitializeGrid(Table table, Grid grid)
         {
-            for (int column = table.Start.X; column <= table.Size.Width + 1; column++)
+            for (int column = 0; column < table.Size.Width + 1; column++)
             {
                 var columnDefinition = new ColumnDefinition();
                 columnDefinition.Width = new GridLength(1, GridUnitType.Star);
                 grid.ColumnDefinitions.Add(columnDefinition);
             }
-            for (int row = table.Start.Y; row <= table.Size.Height + 1; row++)
+            for (int row = 0; row < table.Size.Height + 1; row++)
             {
                 var rowDefinition = new RowDefinition();
                 rowDefinition.Height = new GridLength(1, GridUnitType.Star);
@@ -49,7 +47,7 @@ namespace gameBackTraverse
         {
             var definition = source.First();
 
-            for (int column = 0; column <= table.Size.Width - table.Start.X; column++)
+            for (int column = 0; column < table.Size.Width; column++)
             {
                 var label = CreateLabel(definition, fontSize, column + 1, 0);
 
@@ -62,7 +60,7 @@ namespace gameBackTraverse
         {
             var definition = source.First();
 
-            for (int row = 0; row <= table.Size.Height - table.Start.Y; row++)
+            for (int row = 0; row < table.Size.Height; row++)
             {
                 var label = CreateLabel(definition, fontSize, 0, row + 1);
 
@@ -91,12 +89,12 @@ namespace gameBackTraverse
                 {
                     thickness.Left = borderWidth;
                 }
-                if (point.Y == table.Size.Height)
+                if (point.Y == table.Start.Y)
                 {
                     thickness.Top = borderWidth;
                 }
 
-                var label = CreateLabel(content, fontSize, point.X - table.Start.X + 1, table.Size.Height - point.Y + 1);
+                var label = CreateLabel(content, fontSize, point.X - table.Start.X + 1, point.Y - table.Start.Y + 1);
 
                 label.SetValue(BorderThicknessProperty, thickness);
                 label.SetValue(BorderBrushProperty, new SolidColorBrush(Colors.Black));
@@ -122,9 +120,9 @@ namespace gameBackTraverse
         {
             InitializeComponent();
 
-            var task = Tasks.Task2B();
-            InitializeGrid(task.table, grid);
-            Draw(task.table, task.deadPoints, grid, AlphabetIterator.Instance, NaturalNumberIterator.Instance);
+            var task = Tasks.Task4();
+            InitializeGrid(task, grid);
+            Draw(task, grid, new NaturalNumberIterator(2), new NaturalNumberIterator(4));
         }
     }
 }

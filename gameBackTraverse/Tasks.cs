@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace gameBackTraverse
 {
@@ -28,11 +29,37 @@ namespace gameBackTraverse
         }
         public static Table Task3()
         {
-            return new Table(new Dictionary<IntegerPoint, bool> { { new IntegerPoint(10, 10), true } }, new IntegerPoint(0, 0), new IntegerSize(10, 10), (IntegerPoint start, IntegerPoint end) =>
+            return new Table(new Dictionary<IntegerPoint, bool> { { new IntegerPoint(10, 10), true } }, new IntegerPoint(0, 0), new IntegerSize(11, 11), (IntegerPoint start, IntegerPoint end) =>
             {
                 var condition = ((start.X == end.X) && (start.Y < end.Y)) || ((start.Y == end.Y) && (start.X < end.X)) && ((end.X - start.X + end.Y - start.Y == 4));
 
                 return condition;
+            });
+        }
+        public static Table Task4()
+        {
+            var winningOutcomes = new Dictionary<IntegerPoint, bool>();
+
+            for (int x = 2; x <= 22; x++)
+            {
+                for (int y = 4; y <= 22; y++)
+                {
+                    if (x + y >= 22)
+                    {
+                        winningOutcomes.Add(new IntegerPoint(x, y), true);
+                    }
+                }
+            }
+
+            return new Table(winningOutcomes, new IntegerPoint(2, 4), new IntegerSize(21, 19), (IntegerPoint start, IntegerPoint end) =>
+            {
+                var move1 = (end.X == start.X * 2 + 1) && (start.Y == end.Y);
+                var move2 = (end.X == start.X + 3) && (start.Y == end.Y);
+                var move3 = (end.Y == 2 * start.Y + 1) && (start.X == end.X);
+                var move4 = (end.Y == start.Y + 3) && (start.X == end.X);
+                var c = ((start.X == end.X) && (start.Y < end.Y)) || ((start.Y == end.Y) && (start.X < end.X));
+
+                return move1 || move2 || move3 || move4;
             });
         }
     }
