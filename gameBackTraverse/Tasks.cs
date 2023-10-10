@@ -10,61 +10,141 @@ namespace gameBackTraverse
         {
             var deadPoints = new IntegerPoint[] { new IntegerPoint(8, 4) };
 
-            return (new Table(new Dictionary<IntegerPoint, bool> { { new IntegerPoint(8, 8), true } }, new IntegerPoint(1, 1), new IntegerPoint(8, 8), (IntegerPoint start, IntegerPoint end) =>
+            return (new Table(new IntegerPoint(1, 1), new IntegerPoint(8, 8), (IntegerPoint point) =>
             {
-                var generalConidition = (start.X == end.X && (start.Y < end.Y) && (end.Y - start.Y <= 3)) || (start.Y == end.Y && (start.X < end.X));
-                var passThroughDeadPoint = (start.X == 8 && end.X == 8) && ((start.Y < 4 && end.Y > 4) || end.Y == 4);
+                var possibleMoves = new List<IntegerPoint>();
 
-                return generalConidition && !passThroughDeadPoint;
-            }, deadPoints), deadPoints);
+                for (int x = point.X + 1; x <= 8; x++)
+                {
+                    var able = true;
+
+                    foreach (var deadPoint in deadPoints)
+                    {
+                        if (point.X < deadPoint.X && x >= deadPoint.X && point.Y == deadPoint.Y)
+                        {
+                            able = false;
+                        }
+                    }
+
+                    if (able)
+                    {
+                        possibleMoves.Add(new IntegerPoint(x, point.Y));
+                    }
+                }
+
+                for (int y = point.Y + 1; (y - point.Y <= 3) && y <= 8; y++)
+                {
+                    var able = true;
+
+                    foreach (var deadPoint in deadPoints)
+                    {
+                        if (point.Y < deadPoint.Y && y >= deadPoint.Y && point.X == deadPoint.X)
+                        {
+                            able = false;
+                        }
+                    }
+
+                    if (able)
+                    {
+                        possibleMoves.Add(new IntegerPoint(point.X, y));
+                    }
+                }
+
+                return possibleMoves.ToArray();
+            }, deadPoints, (IntegerPoint point) => { return point.X == 8 && point.Y == 8; }), deadPoints);
         }
         public static (Table table, IntegerPoint[] deadPoints) Task2B()
         {
             var deadPoints = new IntegerPoint[] { new IntegerPoint(8, 4), new IntegerPoint(3, 3) };
 
-            return (new Table(new Dictionary<IntegerPoint, bool> { { new IntegerPoint(8, 8), true } }, new IntegerPoint(1, 1), new IntegerPoint(8, 8), (IntegerPoint start, IntegerPoint end) =>
+            return (new Table(new IntegerPoint(1, 1), new IntegerPoint(8, 8), (IntegerPoint point) =>
             {
-                var generalConidition = (start.X == end.X && (start.Y < end.Y) && (end.Y - start.Y <= 3)) || (start.Y == end.Y && (start.X < end.X));
-                var passThroughDeadPoint = (start.X == 8 && end.X == 8) && ((start.Y < 4 && end.Y > 4) || end.Y == 4);
-                var passThroughDeadPoint2 = (start.X == 3 && end.X == 3) && ((start.Y < 3 && end.Y > 3) || end.Y == 3) || (start.Y == 3 && end.Y == 3) && ((start.X < 3 && end.X > 3) || end.X == 3);
+                var possibleMoves = new List<IntegerPoint>();
 
-                return generalConidition && !passThroughDeadPoint && !passThroughDeadPoint2;
-            }, deadPoints), deadPoints);
+                for (int x = point.X + 1; x <= 8; x++)
+                {
+                    var able = true;
+
+                    foreach (var deadPoint in deadPoints)
+                    {
+                        if (point.X < deadPoint.X && x >= deadPoint.X && point.Y == deadPoint.Y)
+                        {
+                            able = false;
+                        }
+                    }
+
+                    if (able)
+                    {
+                        possibleMoves.Add(new IntegerPoint(x, point.Y));
+                    }
+                }
+
+                for (int y = point.Y + 1; (y - point.Y <= 3) && y <= 8; y++)
+                {
+                    var able = true;
+
+                    foreach (var deadPoint in deadPoints)
+                    {
+                        if (point.Y < deadPoint.Y && y >= deadPoint.Y && point.X == deadPoint.X)
+                        {
+                            able = false;
+                        }
+                    }
+
+                    if (able)
+                    {
+                        possibleMoves.Add(new IntegerPoint(point.X, y));
+                    }
+                }
+
+                return possibleMoves.ToArray();
+            }, deadPoints, (IntegerPoint point) => { return point.X == 8 && point.Y == 8; }), deadPoints);
         }
         public static Table Task3()
         {
-            return new Table(new Dictionary<IntegerPoint, bool> { { new IntegerPoint(10, 10), true } }, new IntegerPoint(0, 0), new IntegerPoint(10, 10), (IntegerPoint start, IntegerPoint end) =>
+            return new Table(new IntegerPoint(0, 0), new IntegerPoint(10, 10), (IntegerPoint point) =>
             {
-                var condition = ((start.X == end.X) && (start.Y < end.Y)) || ((start.Y == end.Y) && (start.X < end.X)) || ((end.X - start.X + end.Y - start.Y == 4));
+                var possibleMoves = new List<IntegerPoint>();
 
-                return condition;
-            });
+                if (point.X + 1 <= 10 && point.Y + 3 <= 10)
+                {
+                    possibleMoves.Add(new IntegerPoint(point.X + 1, point.Y + 3));
+                }
+                if (point.Y + 2 <= 10 && point.X + 2 <= 10)
+                {
+                    possibleMoves.Add(new IntegerPoint(point.X + 2, point.Y + 2));
+                }
+                if (point.X + 3 <= 10 && point.Y + 1 <= 10)
+                {
+                    possibleMoves.Add(new IntegerPoint(point.X + 3, point.Y + 1));
+                }
+
+                for (int x = point.X + 1; x <= 10; x++)
+                {
+                    possibleMoves.Add(new IntegerPoint(x, point.Y));
+                }
+                for (int y = point.Y + 1; y <= 10; y++)
+                {
+                    possibleMoves.Add(new IntegerPoint(point.X, y));
+                }
+
+                return possibleMoves.ToArray();
+            }, (IntegerPoint point) => { return point.X == 10 && point.Y == 10; });
         }
         public static Table Task4()
         {
-            var winningOutcomes = new Dictionary<IntegerPoint, bool>();
-
-            for (int x = 2; x <= 22; x++)
+            return new Table(new IntegerPoint(2, 4), new IntegerPoint(22, 22), (IntegerPoint point) =>
             {
-                for (int y = 4; y <= 22; y++)
-                {
-                    if (x + y >= 22)
-                    {
-                        winningOutcomes.Add(new IntegerPoint(x, y), true);
-                    }
-                }
-            }
+                return new IntegerPoint[] { new IntegerPoint(2 * point.X + 1, point.Y), new IntegerPoint(point.X, 2 * point.Y + 1), new IntegerPoint(point.X + 3, point.Y), new IntegerPoint(point.X, point.Y + 3) };
+            }, (IntegerPoint point) => { return point.X + point.Y >= 22; });
+        }
 
-            return new Table(winningOutcomes, new IntegerPoint(2, 4), new IntegerPoint(22, 22), (IntegerPoint start, IntegerPoint end) =>
+        public static Table Test()
+        {
+            return new Table(new IntegerPoint(0, 0), new IntegerPoint(16, 16), (IntegerPoint point) =>
             {
-                var move1 = (end.X == start.X * 2 + 1) && (start.Y == end.Y);
-                var move2 = (end.X == start.X + 3) && (start.Y == end.Y);
-                var move3 = (end.Y == 2 * start.Y + 1) && (start.X == end.X);
-                var move4 = (end.Y == start.Y + 3) && (start.X == end.X);
-                var c = ((start.X == end.X) && (start.Y < end.Y)) || ((start.Y == end.Y) && (start.X < end.X));
-
-                return move1 || move2 || move3 || move4;
-            });
+                return new IntegerPoint[] { new IntegerPoint(3 * point.X, point.Y), new IntegerPoint(point.X, 3 * point.Y), new IntegerPoint(point.X + 1, point.Y), new IntegerPoint(point.X, point.Y + 1) };
+            }, (IntegerPoint point) => { return point.X + point.Y >= 16; });
         }
     }
 }

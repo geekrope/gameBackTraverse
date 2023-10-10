@@ -15,7 +15,8 @@ namespace gameBackTraverse
         private IntegerPoint _start;
         private IntegerPoint _end;
         private IntegerSize _size;
-        private Func<IntegerPoint, IntegerPoint, bool> _ableToMove;
+        private Func<IntegerPoint, IntegerPoint[]> _possibleMoves;
+        private Func<IntegerPoint, bool> _winningCondition;
 
         public bool this[IntegerPoint point]
         {
@@ -45,6 +46,13 @@ namespace gameBackTraverse
             return _deadPoints.Contains(point);
         }
         /// <summary>
+        /// Gets weather point belongs to table or not
+        /// </summary>
+        private bool IsInTable(IntegerPoint point)
+        {
+            return point.X >= Start.X && point.X <= End.X && point.Y >= Start.Y && point.Y <= End.Y;
+        }
+        /// <summary>
         /// Evaluates outcome of concrete point
         /// </summary>
         /// <param name="point"></param>
@@ -57,19 +65,27 @@ namespace gameBackTraverse
             }
             else
             {
-                var result = true;
+                var winning = _winningCondition(point);
 
-                ForEach((int x, int y) =>
+                if (winning)
                 {
-                    var currentCellPosition = new IntegerPoint(x, y);
-
-                    if (currentCellPosition != point)
+                    if (IsInTable(point))
                     {
-                        var ableToMove = _ableToMove(point, currentCellPosition);
+                        _cells.Add(point, true);
+                    }
 
-                        if (ableToMove)
+                    return true;
+                }
+                else
+                {
+                    var result = true;
+                    var possibleMoves = _possibleMoves(point);
+
+                    foreach (var possibleMove in possibleMoves)
+                    {
+                        if (possibleMove != point)
                         {
-                            var value = GetOutcome(currentCellPosition);
+                            var value = GetOutcome(possibleMove);
 
                             if (value.HasValue && value.Value)
                             {
@@ -77,11 +93,11 @@ namespace gameBackTraverse
                             }
                         }
                     }
-                });
 
-                _cells.Add(point, result);
+                    _cells.Add(point, result);
 
-                return result;
+                    return result;
+                }
             }
         }
         /// <summary>
@@ -150,25 +166,27 @@ namespace gameBackTraverse
             }
         }
 
-        public Table(Dictionary<IntegerPoint, bool> initial, IntegerPoint start, IntegerPoint end, Func<IntegerPoint, IntegerPoint, bool> ableToMove)
+        public Table(IntegerPoint start, IntegerPoint end, Func<IntegerPoint, IntegerPoint[]> possibleMoves, Func<IntegerPoint, bool> winningCondition)
         {
-            _cells = initial;
+            _cells = new Dictionary<IntegerPoint, bool>();
             _start = start;
             _end = end;
             _size = new IntegerSize(_end.X - _start.X + 1, _end.Y - _start.Y + 1);
-            _ableToMove = ableToMove;
+            _possibleMoves = possibleMoves;
             _deadPoints = new HashSet<IntegerPoint>();
+            _winningCondition = winningCondition;
 
             Evaluate();
         }
-        public Table(Dictionary<IntegerPoint, bool> initial, IntegerPoint start, IntegerPoint end, Func<IntegerPoint, IntegerPoint, bool> ableToMove, IntegerPoint[] deadPoints)
+        public Table(IntegerPoint start, IntegerPoint end, Func<IntegerPoint, IntegerPoint[]> possibleMoves, IntegerPoint[] deadPoints, Func<IntegerPoint, bool> winningCondition)
         {
-            _cells = initial;
+            _cells = new Dictionary<IntegerPoint, bool>();
             _start = start;
             _end = end;
             _size = new IntegerSize(_end.X - _start.X + 1, _end.Y - _start.Y + 1);
-            _ableToMove = ableToMove;
+            _possibleMoves = possibleMoves;
             _deadPoints = deadPoints.ToHashSet();
+            _winningCondition = winningCondition;
 
             Evaluate();
         }
