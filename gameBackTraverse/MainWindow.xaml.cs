@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace gameBackTraverse
 {
@@ -69,38 +70,40 @@ namespace gameBackTraverse
                 definition = source.Next();
             }
         }
+        private Label DrawPoint(object content, Table table, IntegerPoint point, double fontSize, double borderWidth)
+        {
+            Thickness thickness = new Thickness(0, 0, borderWidth, borderWidth);
+
+            if (point.X == table.Start.X)
+            {
+                thickness.Left = borderWidth;
+            }
+            if (point.Y == table.Start.Y)
+            {
+                thickness.Top = borderWidth;
+            }
+            var label = CreateLabel(content, fontSize, point.X - table.Start.X + 1, point.Y - table.Start.Y + 1);
+
+            label.SetValue(BorderThicknessProperty, thickness);
+            label.SetValue(BorderBrushProperty, new SolidColorBrush(Colors.Black));
+
+            return label;
+        }
         private void CreateTable(Table table, IntegerPoint[] deadPoints, double fontSize, double borderWidth)
         {
             table.ForEach((IntegerPoint point, bool value) =>
             {
                 var content = value ? "+" : "-";
 
-                foreach (var deadPoint in deadPoints)
-                {
-                    if (point == deadPoint)
-                    {
-                        content = "x";
-                    }
-                }
-
-                Thickness thickness = new Thickness(0, 0, borderWidth, borderWidth);
-
-                if (point.X == table.Start.X)
-                {
-                    thickness.Left = borderWidth;
-                }
-                if (point.Y == table.Start.Y)
-                {
-                    thickness.Top = borderWidth;
-                }
-
-                var label = CreateLabel(content, fontSize, point.X - table.Start.X + 1, point.Y - table.Start.Y + 1);
-
-                label.SetValue(BorderThicknessProperty, thickness);
-                label.SetValue(BorderBrushProperty, new SolidColorBrush(Colors.Black));
-
-                grid.Children.Add(label);
+                grid.Children.Add(DrawPoint(content, table, point, fontSize, borderWidth));
             });
+
+            foreach (var deadPoint in deadPoints)
+            {
+                var content = "x";
+
+                grid.Children.Add(DrawPoint(content, table, deadPoint, fontSize, borderWidth));
+            }
         }
         private void Draw(Table table, Grid grid, NamesIterator columnIterator, NamesIterator rowIterator)
         {
@@ -120,9 +123,9 @@ namespace gameBackTraverse
         {
             InitializeComponent();
 
-            var task = Tasks.Task4();
-            InitializeGrid(task, grid);
-            Draw(task, grid, new NaturalNumberIterator(2), new NaturalNumberIterator(4));
+            var task = Tasks.Task2B();
+            InitializeGrid(task.table, grid);
+            Draw(task.table, task.deadPoints, grid, AlphabetIterator.Instance, new NaturalNumberIterator(1));
         }
     }
 }
