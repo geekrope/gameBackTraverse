@@ -83,14 +83,11 @@ namespace gameBackTraverse
 
                     foreach (var possibleMove in possibleMoves)
                     {
-                        if (possibleMove != point)
-                        {
-                            var value = GetOutcome(possibleMove);
+                        var value = GetOutcome(possibleMove);
 
-                            if (value.HasValue && value.Value)
-                            {
-                                result = false;
-                            }
+                        if (value.HasValue && value.Value)
+                        {
+                            result = false;
                         }
                     }
 
