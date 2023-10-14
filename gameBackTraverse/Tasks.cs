@@ -6,6 +6,24 @@ namespace gameBackTraverse
 {
     public class Tasks
     {
+        public static Table Question6()
+        {
+            return new Table(new IntegerPoint(5, 0), new IntegerPoint(39, 39), (IntegerPoint point) =>
+            {
+                var possibleMoves = new List<IntegerPoint> { new IntegerPoint(point.X + 2, point.Y), new IntegerPoint(point.X, point.Y + 2) };
+
+                if (point.X % 2 == 0 && point.X != 0)
+                {
+                    possibleMoves.Add(new IntegerPoint(point.X * 5 / 2, point.Y));
+                }
+                if (point.Y % 2 == 0 && point.Y != 0)
+                {
+                    possibleMoves.Add(new IntegerPoint(point.X, point.Y * 5 / 2));
+                }
+
+                return possibleMoves.ToArray();
+            }, (IntegerPoint point) => { return point.X + point.Y >= 39; });
+        }
         public static Table Task2Prototype(IntegerPoint[] deadPoints)
         {
             return new Table(new IntegerPoint(1, 1), new IntegerPoint(8, 8), (IntegerPoint point) =>
@@ -100,6 +118,20 @@ namespace gameBackTraverse
             {
                 return new IntegerPoint[] { new IntegerPoint(2 * point.X + 1, point.Y), new IntegerPoint(point.X, 2 * point.Y + 1), new IntegerPoint(point.X + 3, point.Y), new IntegerPoint(point.X, point.Y + 3) };
             }, (IntegerPoint point) => { return point.X + point.Y >= 22; });
+        }
+        public static Table Task8()
+        {
+            return new Table(new IntegerPoint(0, 0), new IntegerPoint(31, 0), (IntegerPoint point) =>
+            {
+                var possibleMoves = new List<IntegerPoint> { new IntegerPoint(point.X + 1, 0), new IntegerPoint(point.X + 4, 0) };
+
+                if (point.X % 2 == 0 && point.X != 0)
+                {
+                    possibleMoves.Add(new IntegerPoint(point.X * 3 / 2, 0));
+                }
+
+                return possibleMoves.ToArray();
+            }, (IntegerPoint point) => { return point.X >= 31; });
         }
 
         public static Table Test()

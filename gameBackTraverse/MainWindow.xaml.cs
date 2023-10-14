@@ -123,9 +123,9 @@ namespace gameBackTraverse
         {
             InitializeComponent();
 
-            var task = Tasks.Task2A();
-            InitializeGrid(task.table, grid);
-            Draw(task.table, task.deadPoints, grid, AlphabetIterator.Instance, new NaturalNumberIterator(1));
+            var task = Tasks.Question6();
+            InitializeGrid(task, grid);
+            Draw(task, grid, new NaturalNumberIterator(5), new NaturalNumberIterator(0));
         }
     }
 }

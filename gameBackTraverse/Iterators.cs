@@ -62,6 +62,7 @@ namespace gameBackTraverse
         public NaturalNumberIterator(int start)
         {
             this.start = start;
+            this.number = start;
         }
     }
 }
