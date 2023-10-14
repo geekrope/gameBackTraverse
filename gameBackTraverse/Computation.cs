@@ -162,6 +162,13 @@ namespace gameBackTraverse
                 action(cell.Key, cell.Value);
             }
         }
+        /// <summary>
+        /// Gets all possible moves from given point
+        /// </summary>
+        public IntegerPoint[] GetPossibleMoves(IntegerPoint from)
+        {
+            return _possibleMoves(from);
+        }
 
         public Table(IntegerPoint start, IntegerPoint end, Func<IntegerPoint, IntegerPoint[]> possibleMoves, Func<IntegerPoint, bool> winningCondition)
         {

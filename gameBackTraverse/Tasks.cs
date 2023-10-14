@@ -121,7 +121,7 @@ namespace gameBackTraverse
         }
         public static Table Task8()
         {
-            return new Table(new IntegerPoint(0, 0), new IntegerPoint(31, 0), (IntegerPoint point) =>
+            return new Table(new IntegerPoint(15, 0), new IntegerPoint(35, 0), (IntegerPoint point) =>
             {
                 var possibleMoves = new List<IntegerPoint> { new IntegerPoint(point.X + 1, 0), new IntegerPoint(point.X + 4, 0) };
 

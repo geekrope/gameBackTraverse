@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
-using System.Windows.Documents;
+using System.Collections.Generic;
 
 namespace gameBackTraverse
 {
@@ -70,7 +71,7 @@ namespace gameBackTraverse
                 definition = source.Next();
             }
         }
-        private Label DrawPoint(object content, Table table, IntegerPoint point, double fontSize, double borderWidth)
+        private Label DrawPoint(object content, Table table, IntegerPoint point, double fontSize, double borderWidth, Color? background = null)
         {
             Thickness thickness = new Thickness(0, 0, borderWidth, borderWidth);
 
@@ -87,15 +88,20 @@ namespace gameBackTraverse
             label.SetValue(BorderThicknessProperty, thickness);
             label.SetValue(BorderBrushProperty, new SolidColorBrush(Colors.Black));
 
+            if (background.HasValue)
+            {
+                label.Background = new SolidColorBrush(background.Value);
+            }
+
             return label;
         }
-        private void CreateTable(Table table, IntegerPoint[] deadPoints, double fontSize, double borderWidth)
+        private void CreateTable(Table table, IntegerPoint[] deadPoints, Func<IntegerPoint, Color?> highlightPoint, double fontSize, double borderWidth)
         {
             table.ForEach((IntegerPoint point, bool value) =>
             {
                 var content = value ? "+" : "-";
 
-                grid.Children.Add(DrawPoint(content, table, point, fontSize, borderWidth));
+                grid.Children.Add(DrawPoint(content, table, point, fontSize, borderWidth, highlightPoint(point)));
             });
 
             foreach (var deadPoint in deadPoints)
@@ -116,16 +122,103 @@ namespace gameBackTraverse
             var definitionsFontSize = 12;
             CreateColumnDefinitions(columnIterator, table, grid, definitionsFontSize);
             CreateRowDefinitions(rowIterator, table, grid, definitionsFontSize);
-            CreateTable(table, deadPoints, tableFontSize, borderWidth);
+            CreateTable(table, deadPoints, (IntegerPoint point) => { return null; }, tableFontSize, borderWidth);
+        }
+        private void Draw(Table table, IntegerPoint[] deadPoints, Func<IntegerPoint, Color?> highlightPoint, Grid grid, NamesIterator columnIterator, NamesIterator rowIterator)
+        {
+            var borderWidth = 1;
+            var tableFontSize = 24;
+            var definitionsFontSize = 12;
+            CreateColumnDefinitions(columnIterator, table, grid, definitionsFontSize);
+            CreateRowDefinitions(rowIterator, table, grid, definitionsFontSize);
+            CreateTable(table, deadPoints, highlightPoint, tableFontSize, borderWidth);
+        }
+
+        private void DrawQuestion6()
+        {
+            var task = Tasks.Question6();
+
+            var quest6Set1 = new HashSet<IntegerPoint>() {
+                new IntegerPoint(5, 14),
+                new IntegerPoint(5, 16),
+                new IntegerPoint(5, 18),
+                new IntegerPoint(5, 20),
+                new IntegerPoint(5, 22),
+                new IntegerPoint(5, 24),
+                new IntegerPoint(5, 26),
+                new IntegerPoint(5, 28),
+                new IntegerPoint(5, 30),
+                new IntegerPoint(5, 32),
+                new IntegerPoint(5, 33) };
+            var quest6Set2 = new HashSet<IntegerPoint>();
+            foreach (var point in quest6Set1)
+            {
+                var moves = task.GetPossibleMoves(point);
+
+                foreach (var move in moves)
+                {
+                    quest6Set2.Add(move);
+                }
+            }
+            Func<IntegerPoint, Color?> highlightQuestion6 = (IntegerPoint point) =>
+            {
+                if (quest6Set1.Contains(point))
+                {
+                    return Colors.OrangeRed;
+                }
+                else if (quest6Set2.Contains(point))
+                {
+                    return Colors.DodgerBlue;
+                }
+                else
+                {
+                    return null;
+                }
+            };
+
+            InitializeGrid(task, grid);
+            Draw(task, new IntegerPoint[0], highlightQuestion6, grid, new NaturalNumberIterator(5), new NaturalNumberIterator(0));
+        }
+        private void DrawTask2A()
+        {
+            var task = Tasks.Task2A();
+
+            InitializeGrid(task.table, grid);
+            Draw(task.table, task.deadPoints, grid, AlphabetIterator.Instance, new NaturalNumberIterator(1));
+        }
+        private void DrawTask2B()
+        {
+            var task = Tasks.Task2B();
+
+            InitializeGrid(task.table, grid);
+            Draw(task.table, task.deadPoints, grid, AlphabetIterator.Instance, new NaturalNumberIterator(1));
+        }
+        private void DrawTask3()
+        {
+            var task = Tasks.Task3();
+
+            InitializeGrid(task, grid);
+            Draw(task, grid, new NaturalNumberIterator(0), new NaturalNumberIterator(0));
+        }
+        private void DrawTask4()
+        {
+            var task = Tasks.Task4();
+
+            InitializeGrid(task, grid);
+            Draw(task, grid, new NaturalNumberIterator(2), new NaturalNumberIterator(4));
+        }
+        private void DrawTask8()
+        {
+            var task = Tasks.Task8();
+
+            InitializeGrid(task, grid);
+            Draw(task, grid, new NaturalNumberIterator(15), new NaturalNumberIterator(0));
         }
 
         public MainWindow()
         {
             InitializeComponent();
-
-            var task = Tasks.Question6();
-            InitializeGrid(task, grid);
-            Draw(task, grid, new NaturalNumberIterator(5), new NaturalNumberIterator(0));
+            DrawQuestion6();
         }
     }
 }
